@@ -72,7 +72,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "POSTAZIONE Catanzaro Centro 1",
+    "Nome Postazione": "POSTAZIONE Catanzaro Centro",
     "Coordinate Postazione": "38.9103989,16.5895139",
     "Mezzo": "MSB",
     "Nome radio": "VICTOR Catanzaro 1",
@@ -81,7 +81,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "POSTAZIONE Catanzaro Centro 2",
+    "Nome Postazione": "POSTAZIONE Catanzaro Centro",
     "Coordinate Postazione": "38.9103989,16.5895139",
     "Mezzo": "MSB",
     "Nome radio": "VICTOR Catanzaro 2",
@@ -658,7 +658,7 @@
   },
   {
     "Nome Postazione": "PRESIDIO Catanzaro",
-    "Coordinate Postazione": "38.9204271,16.5775241",
+    "Coordinate Postazione": "38.9204036,16.5823744",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Catanzaro 1",
     "Convenzione": "H24",
@@ -667,7 +667,7 @@
   },
   {
     "Nome Postazione": "PRESIDIO Catanzaro",
-    "Coordinate Postazione": "38.9204271,16.5775241",
+    "Coordinate Postazione": "38.9204036,16.5823744",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Catanzaro 2",
     "Convenzione": "H24",
@@ -676,7 +676,7 @@
   },
   {
     "Nome Postazione": "PRESIDIO Catanzaro",
-    "Coordinate Postazione": "38.9204271,16.5775241",
+    "Coordinate Postazione": "38.9204036,16.5823744",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. STEN",
     "Convenzione": "H24",
@@ -684,7 +684,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Gioia Tauro ",
+    "Nome Postazione": "POSTAZIONE Gioia Tauro ",
     "Coordinate Postazione": "38.4246353,15.9060008",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES.  Gioia Tauro",
@@ -693,7 +693,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Lamezia Terme",
+    "Nome Postazione": "POSTAZIONE Lamezia Terme",
     "Coordinate Postazione": "38.9611586,16.2993119",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Lamezia ",
@@ -702,7 +702,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Locri",
+    "Nome Postazione": "POSTAZIONE Locri",
     "Coordinate Postazione": "38.2359042,16.2445071",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Locri ",
@@ -711,7 +711,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Melito",
+    "Nome Postazione": "POSTAZIONE Melito",
     "Coordinate Postazione": "37.9172909,15.7797247",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Melito",
@@ -720,7 +720,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Polistena",
+    "Nome Postazione": "POSTAZIONE Polistena",
     "Coordinate Postazione": "38.409369,16.0759207",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Polistena ",
@@ -747,7 +747,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Serra San Bruno ",
+    "Nome Postazione": "POSTAZIONE Serra San Bruno ",
     "Coordinate Postazione": "38.5765189,16.3215716",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Serra S. Bruno",
@@ -756,7 +756,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Soverato",
+    "Nome Postazione": "POSTAZIONE Soverato",
     "Coordinate Postazione": "38.6909276,16.5417063",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Soverato",
@@ -765,7 +765,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Soveria Mannelli",
+    "Nome Postazione": "POSTAZIONE Soveria Mannelli",
     "Coordinate Postazione": "39.0783098,16.3807663",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Soveria Mannelli",
@@ -774,7 +774,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Tropea",
+    "Nome Postazione": "POSTAZIONE Tropea",
     "Coordinate Postazione": "38.6686496,15.8789791",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Tropea",
@@ -783,7 +783,7 @@
     "Giorni": "LUN-DOM"
   },
   {
-    "Nome Postazione": "PRESIDIO Vibo Valentia",
+    "Nome Postazione": "POSTAZIONE Vibo Centro",
     "Coordinate Postazione": "38.6799885,16.1037221",
     "Mezzo": "MSA2_A",
     "Nome radio": "PRES. Vibo",

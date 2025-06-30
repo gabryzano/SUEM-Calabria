@@ -113,7 +113,7 @@
     },
     {
         "OSPEDALE": "H San Giovanni in Fiore",
-        "COORDINATE": "39.9174397,15.7805525",
+        "COORDINATE": "39.2509059,16.6978187",
         "N° pazienti Max": 10,
         "CLASSE": "PS",
         "PUNTO NASCITA": false,
@@ -127,7 +127,7 @@
     },
     {
         "OSPEDALE": "H Acri",
-        "COORDINATE": "39.9174397,15.7805525",
+        "COORDINATE": "39.4917356,16.3889844",
         "N° pazienti Max": 15,
         "CLASSE": "PS",
         "PUNTO NASCITA": false,
@@ -141,7 +141,7 @@
     },
     {
         "OSPEDALE": "H Cariati",
-        "COORDINATE": "39.9174397,15.7805525",
+        "COORDINATE": "39.4898401,16.9586967",
         "N° pazienti Max": 10,
         "CLASSE": "PS",
         "PUNTO NASCITA": false,

@@ -1,7 +1,7 @@
 [
   {
     "Nome Postazione": "BASE HEMS Cosenza",
-    "Coordinate Postazione": "39°18'24.9\"N 16°15'48.1\"E",
+    "Coordinate Postazione": "39.307005,16.2633556",
     "Mezzo": "ELI",
     "Nome radio": "PEGASO 50",
     "Convenzione": "H12",
@@ -10,7 +10,7 @@
   },
   {
     "Nome Postazione": "BASE HEMS Lamezia Terme",
-    "Coordinate Postazione": "38°54'30.6\"N 16°15'07.8\"E",
+    "Coordinate Postazione": "38.9078243,16.2518638",
     "Mezzo": "ELI",
     "Nome radio": "PEGASO 51",
     "Convenzione": "H24",
@@ -19,7 +19,7 @@
   },
   {
     "Nome Postazione": "BASE HEMS Locri",
-    "Coordinate Postazione": "38°14'11.0\"N 16°14'37.2\"E",
+    "Coordinate Postazione": "38.2363979,16.2434316",
     "Mezzo": "ELI",
     "Nome radio": "PEGASO 52",
     "Convenzione": "H12",
@@ -28,7 +28,7 @@
   },
   {
     "Nome Postazione": "BASE HEMS Ciro' Marina ",
-    "Coordinate Postazione": "39°21'07.3\"N 17°06'36.5\"E",
+    "Coordinate Postazione": "39.3521572,17.109997",
     "Mezzo": "ELI",
     "Nome radio": "PEGASO 53",
     "Convenzione": "H12",

@@ -236,8 +236,11 @@
         if (hdr) hdr.textContent = sel.options[sel.selectedIndex].text;
         // Load corresponding indirizzi file for selected central
         try {
-            const path = `src/data/indirizzi ${window.selectedCentral}.json`;
+            const path = `src/data/indirizzi ${window.selectedCentral.toLowerCase()}.json`; // <-- FIX: Use toLowerCase()
             const resp = await fetch(path);
+            if (!resp.ok) { // <-- FIX: Check for 404 errors
+                throw new Error(`File not found: ${path}`);
+            }
             const data = await resp.json();
             // Costruisci mappa categorie per selezione indirizzo in generateNewCall
             window.categorieIndirizzi = {};

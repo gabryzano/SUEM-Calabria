@@ -406,7 +406,7 @@
     },
     {
         "Nome Postazione": "POSTAZIONE Rende",
-        "Coordinate Postazione": "39.3568947,16.2254408",
+        "Coordinate Postazione": "39.3640167,16.2260046",
         "Mezzo": "MSA2",
         "Nome radio": "AUTOMEDICA Rende",
         "Convenzione": "H24",
@@ -415,7 +415,7 @@
     },
     {
         "Nome Postazione": "POSTAZIONE Rende",
-        "Coordinate Postazione": "39.3568947,16.2254408",
+        "Coordinate Postazione": "39.3640167,16.2260046",
         "Mezzo": "MSB",
         "Nome radio": "VICTOR Rende",
         "Convenzione": "H24",
@@ -576,7 +576,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Acri",
+        "Nome Postazione": "POSTAZIONE Acri",
         "Coordinate Postazione": "39.4916605,16.3885333",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Acri",
@@ -585,7 +585,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Cariati",
+        "Nome Postazione": "POSTAZIONE Cariati",
         "Coordinate Postazione": "39.4900245,16.9585638",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Cariati",
@@ -594,7 +594,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Castrovillari",
+        "Nome Postazione": "POSTAZIONE Castrovillari",
         "Coordinate Postazione": "39.8173547,16.2110575",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Castrovillari",
@@ -603,7 +603,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Cetraro",
+        "Nome Postazione": "POSTAZIONE Cetraro",
         "Coordinate Postazione": "39.5311076,15.9180343",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Cetraro",
@@ -612,7 +612,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Corigliano",
+        "Nome Postazione": "POSTAZIONE Corigliano",
         "Coordinate Postazione": "39.591187,16.5206536",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Corigliano",
@@ -639,7 +639,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Crotone",
+        "Nome Postazione": "POSTAZIONE Crotone",
         "Coordinate Postazione": "39.0787441,17.118225",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Crotone 1",
@@ -648,7 +648,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Crotone ",
+        "Nome Postazione": "POSTAZIONE Crotone ",
         "Coordinate Postazione": "39.0787441,17.118225",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Crotone 2",
@@ -657,7 +657,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Paola",
+        "Nome Postazione": "POSTAZIONE Paola",
         "Coordinate Postazione": "39.3537922,16.0404327",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Paola",
@@ -666,7 +666,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Praia a Mare",
+        "Nome Postazione": "POSTAZIONE Praia a Mare",
         "Coordinate Postazione": "39.9173913,15.7796239",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Praia a Mare",
@@ -675,7 +675,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO Rossano",
+        "Nome Postazione": "POSTAZIONE Rossano",
         "Coordinate Postazione": "39.5967995,16.6370363",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. Rossano",
@@ -684,7 +684,7 @@
         "Giorni": "LUN-DOM"
     },
     {
-        "Nome Postazione": "PRESIDIO San Giovanni in Fiore",
+        "Nome Postazione": "POSTAZIONE San Giovanni in Fiore",
         "Coordinate Postazione": "39.2507366,16.696891",
         "Mezzo": "MSA2_A",
         "Nome radio": "PRES. S. Giovanni",

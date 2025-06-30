@@ -100,8 +100,9 @@ class GameUI {
         // Estrai via e comune senza CAP
         let indirizzo = call.indirizzo || call.location || 'Indirizzo sconosciuto';
         let via = '', comune = '';
-        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada) [^,]+)/i);
-        if(viaMatch) via = viaMatch[1];
+        // Regex per via: prende tutto fino alla prima cifra o virgola
+        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada)[^,\d]*)/i);
+        if(viaMatch) via = viaMatch[1].trim();
         // Regex: cerca la parte dopo la virgola, elimina CAP e prende solo il nome del comune
         // Esempio: "Via Decò e Canetta, 24068 Seriate BG" => comune = "Seriate"
         const comuneMatch = indirizzo.match(/,\s*(?:\d{5}\s*)?([\w' ]+?)\s+[A-Z]{2}/);
@@ -120,9 +121,10 @@ class GameUI {
             const tailComma = partsComma[partsComma.length-1].trim();
             if(tailComma) comune = tailComma;
         }
+        // Componi indirizzo sintetico come richiesto: via e comune
         let indirizzoSintetico = via;
-        if(comune) indirizzoSintetico += ' - ' + comune;
-        indirizzoSintetico = indirizzoSintetico.trim() || indirizzo;
+        if (comune) indirizzoSintetico += ' ' + comune;
+        indirizzoSintetico = indirizzoSintetico.trim();
         
         // Imposta lo stile base in base alla presenza o meno di mezzi
         let missioneStyle = '';
@@ -273,8 +275,9 @@ class GameUI {
         // Estrai via e comune senza CAP
         let indirizzo = call.indirizzo || call.location || 'Indirizzo sconosciuto';
         let via = '', comune = '';
-        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada) [^,]+)/i);
-        if(viaMatch) via = viaMatch[1];
+        // Regex per via: prende tutto fino alla prima cifra o virgola
+        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada)[^,\d]*)/i);
+        if(viaMatch) via = viaMatch[1].trim();
         // Regex: cerca la parte dopo la virgola, elimina CAP e prende solo il nome del comune
         // Esempio: "Via Decò e Canetta, 24068 Seriate BG" => comune = "Seriate"
         const comuneMatch = indirizzo.match(/,\s*(?:\d{5}\s*)?([\w' ]+?)\s+[A-Z]{2}/);
@@ -293,9 +296,10 @@ class GameUI {
             const tailComma = partsComma[partsComma.length-1].trim();
             if(tailComma) comune = tailComma;
         }
+        // Componi indirizzo sintetico come richiesto: via e comune
         let indirizzoSintetico = via;
-        if(comune) indirizzoSintetico += ' - ' + comune;
-        indirizzoSintetico = indirizzoSintetico.trim() || indirizzo;
+        if (comune) indirizzoSintetico += ' ' + comune;
+        indirizzoSintetico = indirizzoSintetico.trim();
         
         // Imposta lo stile in base alla presenza o meno di mezzi
         let missioneStyle = '';

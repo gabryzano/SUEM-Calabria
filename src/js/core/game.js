@@ -462,6 +462,18 @@ function aggiornaDisponibilitaMezzi() {
         window._lastAvailabilityCheck.giorno = giorno;    }
 }
 
+// Funzione asincrona per ottenere la velocità di un mezzo in base al tipo
+window.getVelocitaMezzo = async function(tipo_mezzo) {
+    // Valori di default plausibili (km/h)
+    if (!tipo_mezzo) return 50;
+    const t = tipo_mezzo.toUpperCase();
+    if (t.includes('ELI')) return 180; // elicottero
+    if (t.startsWith('MSA')) return 60;
+    if (t.startsWith('MSB')) return 50;
+    if (t.includes('AUTO')) return 70;
+    return 50;
+};
+
 class EmergencyDispatchGame {
     constructor() {
         // Inizializza le proprietà base
@@ -717,152 +729,148 @@ class EmergencyDispatchGame {
     this.updateMezzoMarkers();
     }
     async loadMezzi() {
-         // Carica mezzi da tutte le centrali in parallelo e assegna campo central
-    const centralFiles = { NORD: 'src/data/mezzi_nord.json', SUD: 'src/data/mezzi_sud.json' };
-    const allRaw = [];
-    await Promise.all(Object.entries(centralFiles).map(async ([code, path]) => {
-        try {
-            const res = await fetch(path);
-            if (!res.ok) return console.error(`File ${path} mancante (HTTP ${res.status})`);
-            let data = await res.json();
-            if (!Array.isArray(data)) data = Object.values(data).find(v => Array.isArray(v)) || [];
-            data.forEach(item => { allRaw.push({ ...item, central: code }); });
-        } catch (e) { console.error(`Errore fetch ${path}`, e); }
-    }));
-    // Mappa raw in oggetti veicolo
-    this.mezzi = allRaw.map(m => {
-        let lat = m.lat ?? null, lon = m.lon ?? null;
-        if ((!lat || !lon) && m['Coordinate Postazione']) {
-            const coords = m['Coordinate Postazione'].split(',').map(s => Number(s.trim())); lat = coords[0]; lon = coords[1];
-        }
-        return {
-            nome_radio: (m.nome_radio || m['Nome radio'] || '').trim(),
-            postazione: (m.postazione || m['Nome Postazione'] || '').trim(),
-            tipo_mezzo: m.tipo_mezzo || m.Mezzo || '',
-            convenzione: m.convenzione || m['Convenzione'] || '',
-            Giorni: m.Giorni || m.giorni || 'LUN-DOM',
-            'Orario di lavoro': m['Orario di lavoro'] || '',
-            lat, lon,
-            stato: 1,
-            _marker: null,
-            _callMarker: null,
-            _ospedaleMarker: null,
-            central: m.central
-        };
-    });
-    // Una postazione può ospitare più mezzi (anche con stesso nome_radio)
-    this.postazioniMap = {};
-    this.mezzi.forEach(m => {
-        if (!m.postazione || m.postazione.trim() === "" || !m.lat || !m.lon) return;
-        const key = m.postazione.trim() + '_' + m.lat + '_' + m.lon;
-        const flagKey = 'is' + m.central;
-        if (!this.postazioniMap[key]) {
-            this.postazioniMap[key] = {
-                nome: m.postazione.trim(),
-                lat: m.lat,
-                lon: m.lon,
-                mezzi: [],
-                isHems: false
-            };
-        }
-        // mark postazione belonging to this central
-        this.postazioniMap[key][flagKey] = true;
-        this.postazioniMap[key].mezzi.push(m);
-    });
-
-            // Load HEMS dispatch center vehicles
+        // Carica mezzi da NORD o SUD, includendo anche quelli dell'altra centrale
+        let mezzi = [];
+        const central = window.selectedCentral;
+        let mezziPrincipale = [];
+        let mezziEsterni = [];
+        if (central === 'NORD') {
+            const response = await fetch('src/data/mezzi_nord.json');
+            mezziPrincipale = await response.json();
             try {
-                const resHems = await fetch('src/data/hems.json');
-                let hems = await resHems.json();
-                if (!Array.isArray(hems)) {
-                    const arr = Object.values(hems).find(v => Array.isArray(v));
-                    hems = arr || [];
-                }
-                hems.forEach(item => {
-                    const nomePost = (item['Nome Postazione'] || '').trim();
-                    if (!nomePost) return;
-                    const coords = item['Coordinate Postazione']?.split(',').map(s => Number(s.trim())) || [];
-                    const lat = coords[0], lon = coords[1];
-                    if (lat == null || lon == null) return;
-                    const mezzo = {
-                        nome_radio: (item['Nome radio'] || '').trim(),
-                        postazione: nomePost,
-                        tipo_mezzo: item['Mezzo'] || '',
-                        convenzione: item['Convenzione'] || '',
-                        Giorni: item['Giorni'] || item['giorni'] || "LUN-DOM",
-                        'Orario di lavoro': item['Orario di lavoro'] || '',
-                        lat, lon, stato: 1, _marker: null, _callMarker: null, _ospedaleMarker: null
-                    };
-                    this.mezzi.push(mezzo);
-                    const key = nomePost + '_' + lat + '_' + lon;
-                    if (!this.postazioniMap[key]) {
-                        this.postazioniMap[key] = { nome: nomePost, lat, lon, mezzi: [], isHems: true };
-                    }
-                    this.postazioniMap[key].mezzi.push(mezzo);
-                });
-            } catch(e) { console.error('Error loading hems.json:', e); }
-
+                const responseSud = await fetch('src/data/mezzi_sud.json');
+                mezziEsterni = await responseSud.json();
+                // Marca i mezzi esterni
+                mezziEsterni = (Array.isArray(mezziEsterni) ? mezziEsterni : []).map(m => ({...m, _isEsterno: true}));
+            } catch(e) { console.warn('Impossibile caricare mezzi sud:', e); }
+        } else if (central === 'SUD') {
+            const response = await fetch('src/data/mezzi_sud.json');
+            mezziPrincipale = await response.json();
+            try {
+                const responseNord = await fetch('src/data/mezzi_nord.json');
+                mezziEsterni = await responseNord.json();
+                mezziEsterni = (Array.isArray(mezziEsterni) ? mezziEsterni : []).map(m => ({...m, _isEsterno: true}));
+            } catch(e) { console.warn('Impossibile caricare mezzi nord:', e); }
+        }
+        // Carica SEMPRE i mezzi e postazioni HEMS
+        try {
+            const resHems = await fetch('src/data/hems.json');
+            let hems = await resHems.json();
+            if (!Array.isArray(hems)) {
+                const arr = Object.values(hems).find(v => Array.isArray(v));
+                hems = arr || [];
+            }
+            hems = hems.map(item => ({ ...item, isHems: true }));
+            mezziPrincipale = mezziPrincipale.concat(hems);
+        } catch(e) { console.error('Error loading hems.json:', e); }
+        mezzi = [].concat(
+            Array.isArray(mezziPrincipale) ? mezziPrincipale : [],
+            Array.isArray(mezziEsterni) ? mezziEsterni : []
+        );
+        // Processa tutti i mezzi
+        this.mezzi = (Array.isArray(mezzi) ? mezzi : []).map(m => {
+            let lat = m.lat ?? null, lon = m.lon ?? null;
+            if ((!lat || !lon) && m['Coordinate Postazione']) {
+                const coords = m['Coordinate Postazione'].split(',').map(s => Number(s.trim()));
+                lat = coords[0];
+                lon = coords[1];
+            }
+            return {
+                nome_radio: (m.nome_radio || m['Nome radio'] || '').trim(),
+                postazione: (m.postazione || m['Nome Postazione'] || '').trim(),
+                tipo_mezzo: m.tipo_mezzo || m.Mezzo || '',
+                convenzione: m.convenzione || m['Convenzione'] || '',
+                Giorni: m.Giorni || m.giorni || 'LUN-DOM',
+                'Orario di lavoro': m['Orario di lavoro'] || '',
+                lat,
+                lon,
+                stato: 1,
+                _marker: null,
+                _callMarker: null,
+                _ospedaleMarker: null,
+                central: m.central || window.selectedCentral,
+                isHems: m.isHems || false,
+                _isEsterno: m._isEsterno || false // nuovo flag
+            };
+        });
+        // Crea postazioniMap
+        this.postazioniMap = {};
+        this.mezzi.forEach(m => {
+            if (!m.postazione || m.postazione.trim() === "" || !m.lat || !m.lon) return;
+            const key = m.postazione.trim() + '_' + m.lat + '_' + m.lon;
+            if (!this.postazioniMap[key]) {
+                this.postazioniMap[key] = {
+                    nome: m.postazione.trim(),
+                    lat: m.lat,
+                    lon: m.lon,
+                    mezzi: [],
+                    isHems: m.isHems === true,
+                    isEsterno: m._isEsterno === true // postazione esterna
+                };
+            }
+            this.postazioniMap[key].mezzi.push(m);
+            // Se almeno un mezzo è HEMS, la postazione è HEMS
+            if (m.isHems) this.postazioniMap[key].isHems = true;
+            // Se almeno un mezzo è esterno, la postazione è esterna
+            if (m._isEsterno) this.postazioniMap[key].isEsterno = true;
+        });
     }
 
     async loadHospitals() {
         try {
             let hospitals = [];
-            
-            // Load hospitals based on selected central
+            // Load hospitals based on selected central, includendo anche quelli dell'altra centrale
             if (window.selectedCentral === 'NORD') {
                 // Load NORD hospitals
                 const response = await fetch('src/data/ospedali_nord.json');
                 const hospitalList = await response.json();
-                
-                hospitals = (Array.isArray(hospitalList) ? hospitalList : Object.values(hospitalList).find(v => Array.isArray(v)) || [])
-                    .map(hosp => {
-                        let lat = null, lon = null;
-                        if (hosp.COORDINATE) {
-                            const coords = hosp.COORDINATE.split(',').map(s => Number(s.trim()));
-                            lat = coords[0];
-                            lon = coords[1];
-                        }
-                        return {
-                            nome: hosp.OSPEDALE?.trim() || "",
-                            lat,
-                            lon,
-                            indirizzo: hosp.INDIRIZZO || "",
-                            raw: hosp
-                        };
-                    })
-                    .filter(h => h.lat !== null && h.lon !== null && !isNaN(h.lat) && !isNaN(h.lon));
-                    
+                let ospedaliNord = (Array.isArray(hospitalList) ? hospitalList : Object.values(hospitalList).find(v => Array.isArray(v)) || []);
+                // Load SUD hospitals
+                let ospedaliSud = [];
+                try {
+                    const responseSud = await fetch('src/data/ospedali_sud.json');
+                    const hospitalListSud = await responseSud.json();
+                    ospedaliSud = (Array.isArray(hospitalListSud) ? hospitalListSud : Object.values(hospitalListSud).find(v => Array.isArray(v)) || []);
+                    // Marca come esterni
+                    ospedaliSud = ospedaliSud.map(h => ({...h, _isEsterno: true}));
+                } catch(e) { console.warn('Impossibile caricare ospedali sud:', e); }
+                hospitals = ospedaliNord.concat(ospedaliSud);
             } else if (window.selectedCentral === 'SUD') {
                 // Load SUD hospitals
                 const response = await fetch('src/data/ospedali_sud.json');
                 const hospitalList = await response.json();
-                
-                hospitals = (Array.isArray(hospitalList) ? hospitalList : Object.values(hospitalList).find(v => Array.isArray(v)) || [])
-                    .map(hosp => {
-                        let lat = null, lon = null;
-                        if (hosp.COORDINATE) {
-                            const coords = hosp.COORDINATE.split(',').map(s => Number(s.trim()));
-                            lat = coords[0];
-                            lon = coords[1];
-                        }
-                        return {
-                            nome: hosp.OSPEDALE?.trim() || "",
-                            lat,
-                            lon,
-                            indirizzo: hosp.INDIRIZZO || "",
-                            raw: hosp
-                        };
-                    })
-                    .filter(h => h.lat !== null && h.lon !== null && !isNaN(h.lat) && !isNaN(h.lon));
+                let ospedaliSud = (Array.isArray(hospitalList) ? hospitalList : Object.values(hospitalList).find(v => Array.isArray(v)) || []);
+                // Load NORD hospitals
+                let ospedaliNord = [];
+                try {
+                    const responseNord = await fetch('src/data/ospedali_nord.json');
+                    const hospitalListNord = await responseNord.json();
+                    ospedaliNord = (Array.isArray(hospitalListNord) ? hospitalListNord : Object.values(hospitalListNord).find(v => Array.isArray(v)) || []);
+                    ospedaliNord = ospedaliNord.map(h => ({...h, _isEsterno: true}));
+                } catch(e) { console.warn('Impossibile caricare ospedali nord:', e); }
+                hospitals = ospedaliSud.concat(ospedaliNord);
             }
-
-            this.hospitals = hospitals;
-            hospitals.forEach(hosp => {
+            this.hospitals = hospitals.map(hosp => {
+                let lat = null, lon = null;
+                if (hosp.COORDINATE) {
+                    const coords = hosp.COORDINATE.split(',').map(s => Number(s.trim()));
+                    lat = coords[0];
+                    lon = coords[1];
+                }
+                return {
+                    nome: hosp.OSPEDALE?.trim() || "",
+                    lat,
+                    lon,
+                    indirizzo: hosp.INDIRIZZO || "",
+                    raw: hosp,
+                    isEsterno: hosp._isEsterno === true
+                };
+            }).filter(h => h.lat !== null && h.lon !== null && !isNaN(h.lat) && !isNaN(h.lon));
+            this.hospitals.forEach(hosp => {
                 const marker = L.marker([hosp.lat, hosp.lon], { icon: this.getHospitalIcon() }).addTo(this.map)
                     .bindPopup(`<b>${hosp.nome}</b><br>${hosp.indirizzo || ""}`);
                 hosp._marker = marker;
             });
-            
             if (this.calls && this.ui && typeof this.ui.updateMissioneInCorso === 'function') {
                 Array.from(this.calls.values()).forEach(call => {
                     this.ui.updateMissioneInCorso(call);
@@ -871,33 +879,6 @@ class EmergencyDispatchGame {
         } catch (e) {
             console.error("Errore nel caricamento degli ospedali:", e);
         }
-    }
-
-    async loadIndirizzi() {
-        try {
-            let indirizzi = [];
-            const central = window.selectedCentral;
-            if (central === 'NORD') {
-                const response = await fetch('src/data/indirizzi nord.json');
-                indirizzi = await response.json();
-            } else if (central === 'SUD') {
-                const response = await fetch('src/data/indirizzi sud.json');
-                indirizzi = await response.json();
-            }
-            this.indirizzi = Array.isArray(indirizzi) ? indirizzi : [];
-        } catch (e) {
-            console.error("Errore nel caricamento degli indirizzi:", e);
-            this.indirizzi = [];
-        }
-    }
-
-    updateActiveMissionMezzi() {
-        if (!this.mezzi) return;
-        this.mezzi.forEach(m => {
-            if (m.chiamata || m.ospedale) {
-                this.ui.updateStatoMezzi(m);
-            }
-        });
     }
 
     getHospitalIcon() {
@@ -910,9 +891,9 @@ class EmergencyDispatchGame {
         });
     }
 
-    getPostazioneIcon(hasLiberi, isHems = false) {
+    getPostazioneIcon(hasLiberi, isHems = false, isEsterno = false) {
         // White background for HEMS or any external SOREU central markers
-        const whiteBg = isHems;
+        const whiteBg = isHems || isEsterno;
         const bg = whiteBg ? "#ffffff" : (hasLiberi ? "#43a047" : "#d32f2f");
         return L.divIcon({
             className: 'postazione-marker',
@@ -928,10 +909,7 @@ class EmergencyDispatchGame {
         if (!this._postazioneMarkers) this._postazioneMarkers = [];
         this._postazioneMarkers.forEach(m => this.map.removeLayer(m));
         this._postazioneMarkers = [];
-        
-        // Get current central for filtering
         const currentCentral = (window.selectedCentral||'').trim().toUpperCase();
-        
         Object.values(this.postazioniMap).forEach(postazione => {
            // Skip entire postazione if central compatibility doesn't match
            const postazioniCentral = Object.keys(postazione).find(key => key.startsWith('is') && postazione[key] === true);
@@ -957,7 +935,6 @@ class EmergencyDispatchGame {
                 
                 return isDisponibile && inThisPostazione && correctCoordinates;
             });
-            
             const hasLiberi = mezziLiberi.length > 0;
             
             const mezziPostazione = (this.mezzi || []).filter(m =>
@@ -997,15 +974,9 @@ class EmergencyDispatchGame {
             }
             
             // SRL, SRP, SRM postazioni should use white background: detect flags
-            // Determine if postazione is external to selected central or a Creli postazione
-            const sel = window.selectedCentral;
-            const isSpecial = postazione.isCreli ||
-                (sel === 'SRA' && (postazione.isSRL || postazione.isSRP)) ||
-                (sel === 'SRL' && (postazione.isSRA || postazione.isSRP || postazione.isSRM)) ||
-                (sel === 'SRM' && (postazione.isSRL || postazione.isSRP)) ||
-                (sel === 'SRP' && (postazione.isSRA || postazione.isSRL || postazione.isSRM));
-            const marker = L.marker([postazione.lat, postazione.lon], { 
-                icon: this.getPostazioneIcon(hasLiberi, isSpecial) 
+            // Check if postazione is HEMS (helicopter station)
+            const marker = L.marker([postazione.lat, postazione.lon], {
+                icon: this.getPostazioneIcon(hasLiberi, postazione.isHems, postazione.isEsterno) 
             }).addTo(this.map)
             .bindPopup(`<div style="font-weight:bold;font-size:15px;">${postazione.nome}</div>${mezziHtml}`);
             
@@ -1047,7 +1018,7 @@ class EmergencyDispatchGame {
                 marker.setPopupContent(
                     `<div style="font-weight:bold;font-size:15px;">${postazione.nome}</div>${mezziHtmlNow}`
                 );
-                marker.setIcon(this.getPostazioneIcon(hasLiberiNow, isSpecial));
+                marker.setIcon(this.getPostazioneIcon(hasLiberiNow, postazione.isHems, postazione.isEsterno));
             });
             
             this._postazioneMarkers.push(marker);
@@ -1055,7 +1026,7 @@ class EmergencyDispatchGame {
     }
 
     updateMezzoMarkers() {
-        if (!this.map || !this.mezzi) return;
+        if (!this.mezzi) return;
         this.mezzi.forEach(m => {
             if (m._marker) {
                 this.map.removeLayer(m._marker);
@@ -1101,11 +1072,12 @@ class EmergencyDispatchGame {
     }
 
     async moveMezzoGradualmente(mezzo, lat1, lon1, lat2, lon2, durataMinuti, statoFinale, callback) {
-        // Se non è ELI, usa percorso stradale
         let percorso = [[lat1, lon1], [lat2, lon2]];
-        if (mezzo.tipo_mezzo !== 'ELI') {
-            percorso = await getPercorsoStradaleOSRM(lat1, lon1, lat2, lon2);
-        }
+    if (mezzo.tipo_mezzo && !mezzo.tipo_mezzo.toUpperCase().includes('ELI')) {
+        percorso = await getPercorsoStradaleOSRM(lat1, lon1, lat2, lon2, mezzo.tipo_mezzo);
+    } else if (mezzo.tipo_mezzo && mezzo.tipo_mezzo.toUpperCase().includes('ELI')) {
+        percorso = [[lat1, lon1], [lat2, lon2]];
+    }
         // Calcola quanti step totali (1 step al secondo simulato)
         const stepTotali = durataMinuti * 60;
         let stepAttuale = 0;
@@ -1464,15 +1436,15 @@ class EmergencyDispatchGame {
         const btnsRapidi = [
             {tipo:'MSB', label:'MSB'},
             {tipo:'MSA1', label:'MSA1'},
-            {tipo:'MSA2', label:'ELI'}
+            {tipo:'MSA2', label:'MSA2'},
+            {tipo:'ELI', label:'ELI'}
         ];
         const btnsRapidiDiv = document.getElementById('btnsRapidiMezzi');
-               if (btnsRapidiDiv) {
+        if (btnsRapidiDiv) {
             btnsRapidiDiv.innerHTML = btnsRapidi.map(b =>
                 `<button type='button' class='btn-rapido-mezzo' data-tipo='${b.tipo}' style='font-size:15px;padding:2px 10px 2px 10px;border-radius:4px;background:#1976d2;color:#fff;border:none;line-height:1.2;min-width:44px;'>${b.label}</button>`
             ).join('');
         }
-
        
 
         // Mostra mezzi in stato 1, 2, 6, 7 oppure già assegnati, quindi deduplica per nome_radio
@@ -1499,7 +1471,7 @@ class EmergencyDispatchGame {
             // Add icon based on state
             let icon = '';
             if (m.stato === 1) icon = '✅ ';
-            else if (m.stato === 2) icon = '🚑 ';
+                       else if (m.stato === 2) icon = '🚑 ';
             else if (m.stato === 7) icon = '↩️ ';
             const checked = (call.mezziAssegnati||[]).includes(m.nome_radio) ? 'checked' : '';
             // Disable checkbox if vehicle is not in allowed states
@@ -1539,11 +1511,18 @@ class EmergencyDispatchGame {
                     // Seleziona solo il primo mezzo non ancora selezionato di quel tipo
                     const checkboxes = Array.from(document.querySelectorAll('#mezziAssegnatiScroll input[type=checkbox]'));
                     // Consider only vehicles in state 1, 2 or 7
-                    const mezziTipo = mezziFiltrati.filter(m => m.tipo_mezzo && m.tipo_mezzo.startsWith(tipo) && [1,7].includes(m.stato));
+                    let mezziTipo;
+                    if (tipo === 'ELI') {
+                        // Seleziona solo i mezzi che hanno tipo_mezzo esattamente 'ELI' o che contengono 'ELI' (per elicotteri)
+                        mezziTipo = mezziFiltrati.filter(m => m.tipo_mezzo && m.tipo_mezzo.toUpperCase().includes('ELI') && [1,7].includes(m.stato));
+                    } else {
+                        mezziTipo = mezziFiltrati.filter(m => m.tipo_mezzo && m.tipo_mezzo.startsWith(tipo) && [1,7].includes(m.stato));
+                    }
                     for (const m of mezziTipo) {
                         const cb = checkboxes.find(c => c.value === m.nome_radio);
                         if (cb && !cb.checked) {
                             cb.checked = true;
+                            cb.dispatchEvent(new Event('change', {bubbles:true}));
                             break;
                         }
                     }
@@ -1773,124 +1752,49 @@ class EmergencyDispatchGame {
         }, randomMinuti(1, 4) * 60);
     }
 
-    gestisciStato7(mezzo) {
-        // Se il mezzo ha già una nuova chiamata, non procedere con il rientro
-        if (mezzo.chiamata) {
-            console.log('[INFO] Mezzo in stato 7 ha una nuova chiamata, non procedo con il rientro:', mezzo.nome_radio);
-            return;
+    async loadIndirizzi() {
+        try {
+            let indirizzi = [];
+            const central = window.selectedCentral;
+            if (central === 'NORD') {
+                const response = await fetch('src/data/indirizzi nord.json');
+                indirizzi = await response.json();
+            } else if (central === 'SUD') {
+                const response = await fetch('src/data/indirizzi sud.json');
+                indirizzi = await response.json();
+            }
+            this.indirizzi = Array.isArray(indirizzi) ? indirizzi : [];
+        } catch (e) {
+            console.error("Errore nel caricamento degli indirizzi:", e);
+            this.indirizzi = [];
         }
-        
-        const postazione = Object.values(this.postazioniMap).find(p => p.nome === mezzo.postazione);
-        if (!postazione) return;
-        
-        // Se il mezzo è già alla postazione, passa a stato 1
-        if (Math.abs(mezzo.lat - postazione.lat) < 0.0001 && Math.abs(mezzo.lon - postazione.lon) < 0.0001) {
-            // Reset dati di trasporto residui
-            mezzo.ospedale = null;
-            mezzo.codice_trasporto = null;
-            mezzo._trasportoConfermato = false;
-            mezzo._trasportoAvviato = false;
-            setStatoMezzo(mezzo, 1);
-            return;
-        }
-        
-        // Indica che il mezzo sta tornando alla base
-        mezzo._inRientroInSede = true;
-        
-        // Calcola tempo di rientro
-        const dist = distanzaKm(mezzo.lat, mezzo.lon, postazione.lat, postazione.lon);
-        getVelocitaMezzo(mezzo.tipo_mezzo).then(vel => {
-            const tempoRientro = Math.round((dist / vel) * 60);
-            this.moveMezzoGradualmente(
-                mezzo,
-                mezzo.lat, mezzo.lon,
-                postazione.lat, postazione.lon,
-                Math.max(tempoRientro, 2),
-                1,
-                () => {
-                    mezzo._inRientroInSede = false;
-                    // Reset dati di trasporto residui
-                    mezzo.ospedale = null;
-                    mezzo.codice_trasporto = null;
-                    mezzo._trasportoConfermato = false;
-                    mezzo._trasportoAvviato = false;
-                    mezzo.comunicazioni = (mezzo.comunicazioni || []).concat([`Libero in sede`]);
-                    this.ui.updateStatoMezzi(mezzo);
-                    this.updateMezzoMarkers();
-                    this.updatePostazioneMarkers();
-                }
-            );
-        });
     }
-}
+} // <--- chiusura corretta della classe
 
 // Esporta la classe EmergencyDispatchGame globalmente
 window.EmergencyDispatchGame = EmergencyDispatchGame;
 
-// Esportazione della classe EmergencyDispatchGame
-if (typeof window !== 'undefined') {
-    // Non ridefinire la classe se già presente
-    if (!window.hasOwnProperty('EmergencyDispatchGame')) {
-        window.EmergencyDispatchGame = EmergencyDispatchGame;
-        console.log("EmergencyDispatchGame class initialized and exposed to global scope");
-    }
-}
-
-// Funzione per ottenere un percorso stradale da OSRM tra due coordinate (ritorna array di [lat,lon])
-async function getPercorsoStradaleOSRM(lat1, lon1, lat2, lon2) {
-    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson`;
-    try {
-        const resp = await fetch(url);
-        const data = await resp.json();
-        if (data.routes && data.routes[0] && data.routes[0].geometry && data.routes[0].geometry.coordinates) {
-            // OSRM restituisce [lon,lat], convertiamo in [lat,lon]
-            return data.routes[0].geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+// Ensure getPercorsoStradaleOSRM is globally defined to avoid ReferenceError
+// Definizione globale di getPercorsoStradaleOSRM: solo ELI in linea retta, gli altri via OSRM
+if (typeof window.getPercorsoStradaleOSRM !== 'function') {
+    window.getPercorsoStradaleOSRM = async function(lat1, lon1, lat2, lon2, tipoMezzo) {
+        // Se ELI, linea retta
+        if (tipoMezzo && tipoMezzo.toUpperCase().includes('ELI')) {
+            return [[lat1, lon1], [lat2, lon2]];
         }
-    } catch (e) {
-        console.error('Errore richiesta OSRM:', e);
-    }
-    // fallback: linea retta
-    return [[lat1, lon1], [lat2, lon2]];
-}
-
-// Funzione asincrona per ottenere la distanza su strada tramite OSRM (in km)
-window.getDistanzaStradaleOSRM = async function(lat1, lon1, lat2, lon2, tipoMezzo = '') {
-    if (tipoMezzo === 'ELI') {
-        // Per ELI usa distanza in linea d'aria
-        return distanzaKm(lat1, lon1, lat2, lon2);
-    }
-    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
-    try {
-        const resp = await fetch(url);
-        const data = await resp.json();
-        if (data.routes && data.routes[0] && typeof data.routes[0].distance === 'number') {
-            return data.routes[0].distance / 1000; // metri -> km
+        // Altrimenti, prova OSRM demo server
+        try {
+            const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data && data.routes && data.routes[0] && data.routes[0].geometry && data.routes[0].geometry.coordinates) {
+                // OSRM restituisce [lon, lat], serve [lat, lon]
+                return data.routes[0].geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+            }
+        } catch (e) {
+            console.warn('OSRM route fetch failed, fallback to straight line', e);
         }
-    } catch (e) {
-        console.error('Errore richiesta OSRM per distanza:', e);
-    }
-    // fallback: linea retta
-    return distanzaKm(lat1, lon1, lat2, lon2);
-};
-
-// Restituisce la velocità media (in km/h) di un mezzo dato il tipo
-async function getVelocitaMezzo(tipoMezzo) {
-    // Carica la tabella solo una volta
-    if (!window._tabellaMezzi118) {
-        const response = await fetch('src/data/tabella_mezzi_118.json');
-        const data = await response.json();
-        window._tabellaMezzi118 = (data.Sheet1 || data.sheet1 || []);
-    }
-    const tab = window._tabellaMezzi118;
-    // Cerca la voce corrispondente
-    const entry = tab.find(e => (e.Tipo || '').toUpperCase() === (tipoMezzo || '').toUpperCase());
-    if (entry && entry["Velocità media"]) {
-        // Estrae il numero dalla stringa (es: "80 km/h")
-        const match = entry["Velocità media"].toString().match(/\d+/);
-        if (match) return Number(match[0]);
-    }    // Default: 60 km/h
-    return 60;
+        // Fallback: linea retta
+        return [[lat1, lon1], [lat2, lon2]];
+    };
 }
-
-// Esporta la classe EmergencyDispatchGame globalmente
-window.EmergencyDispatchGame = EmergencyDispatchGame;
