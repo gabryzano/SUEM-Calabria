@@ -1,3 +1,65 @@
+/* Ottimizzazione tabella mezzi nel popup missione */
+.stato-mezzi-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 14px;
+  background: #f5f8fa;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.stato-mezzi-table thead th {
+  background: #e3f2fd;
+  color: #003366;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-bottom: 1.5px solid #b3c6e0;
+  font-size: 13px;
+}
+.stato-mezzi-table tbody tr:nth-child(even) {
+  background: #f0f4f8;
+}
+.stato-mezzi-table tbody tr:nth-child(odd) {
+  background: #f8fafc;
+}
+.stato-mezzi-table td {
+  padding: 3px 6px;
+  vertical-align: middle;
+  font-size: 13px;
+}
+.stato-mezzi-table input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1976d2;
+  margin-right: 4px;
+}
+.stato-mezzi-table label {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.stato-mezzi-table .mezzo-remove-info {
+  color: #d32f2f;
+  font-style: italic;
+  font-size: 12px;
+  margin-left: 4px;
+}
+.stato-mezzi-table th, .stato-mezzi-table td {
+  border: none;
+}
+.stato-mezzi-table th:first-child, .stato-mezzi-table td:first-child {
+  width: 38%;
+}
+.stato-mezzi-table th:nth-child(2), .stato-mezzi-table td:nth-child(2) {
+  width: 22%;
+}
+.stato-mezzi-table th:nth-child(3), .stato-mezzi-table td:nth-child(3) {
+  width: 12%;
+}
+.stato-mezzi-table th:nth-child(4), .stato-mezzi-table td:nth-child(4) {
+  width: 28%;
+}
 /* Reset e stili base */
 html, body { 
     margin: 0; 
@@ -336,6 +398,16 @@ label {
 .status-active { background: #e3f2fd; color: #1976d2; }
 .status-completed { background: #e8f5e9; color: #2e7d32; }
 .status-pending { background: #fff3e0; color: #f57c00; }
+
+/* Sticky header for Elenco Ospedali in Stato Mezzi */
+.ospedali-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f9f9f9;
+    border-bottom: 1px solid #bbb;
+    padding: 6px 0 6px 0;
+}
 
 /* Responsive */
 @media (max-width: 768px) {

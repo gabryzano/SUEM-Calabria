@@ -237,7 +237,7 @@
     "Nome Postazione": "POSTAZIONE Lamezia Terme",
     "Coordinate Postazione": "38.9611586,16.2993119",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Lamezia ",
+    "Nome radio": "AM Lamezia ",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -291,7 +291,7 @@
     "Nome Postazione": "POSTAZIONE Locri ",
     "Coordinate Postazione": "38.2359042,16.2445071",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Locri",
+    "Nome radio": "AM Locri",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -363,7 +363,7 @@
     "Nome Postazione": "POSTAZIONE Palizzi",
     "Coordinate Postazione": "37.9188436,15.9890625",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Palizzi",
+    "Nome radio": "AM Palizzi",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -381,7 +381,7 @@
     "Nome Postazione": "POSTAZIONE Palmi ",
     "Coordinate Postazione": "38.3604483,15.8508344",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Palmi",
+    "Nome radio": "AM Palmi",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -453,7 +453,7 @@
     "Nome Postazione": "POSTAZIONE Reggio Nord ",
     "Coordinate Postazione": "38.1252788,15.6540819",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Reggio Nord",
+    "Nome radio": "AM Reggio Nord",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -462,7 +462,7 @@
     "Nome Postazione": "POSTAZIONE Reggio Sud",
     "Coordinate Postazione": "38.0842463,15.6377183",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Reggio Sud",
+    "Nome radio": "AM Reggio Sud",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -480,7 +480,7 @@
     "Nome Postazione": "POSTAZIONE S. Eufemia D'aspromonte",
     "Coordinate Postazione": "38.2610645,15.8530553",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA S. Eufemia ",
+    "Nome radio": "AM S. Eufemia ",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -507,7 +507,7 @@
     "Nome Postazione": "POSTAZIONE Sellia Marina",
     "Coordinate Postazione": "38.8995556,16.7432483",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Sellia",
+    "Nome radio": "AM Sellia",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -543,7 +543,7 @@
     "Nome Postazione": "POSTAZIONE Soverato",
     "Coordinate Postazione": "38.6909276,16.5417063",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Soverato",
+    "Nome radio": "AM Soverato",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -588,7 +588,7 @@
     "Nome Postazione": "POSTAZIONE Taurianova ",
     "Coordinate Postazione": "38.3531836,16.0059464",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Taurianova",
+    "Nome radio": "AM Taurianova",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"
@@ -633,7 +633,7 @@
     "Nome Postazione": "POSTAZIONE Vibo Centro",
     "Coordinate Postazione": "38.6799885,16.1037221",
     "Mezzo": "MSA2",
-    "Nome radio": "AUTOMEDICA Vibo Centro",
+    "Nome radio": "AM Vibo Centro",
     "Convenzione": "H24",
     "Orario di lavoro": "00:00-00:00",
     "Giorni": "LUN-DOM"

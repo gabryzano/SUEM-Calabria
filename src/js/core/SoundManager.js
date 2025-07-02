@@ -32,18 +32,9 @@ class SoundManager {
         onplayerror: (id, err) => console.error('[SoundManager] report play error', err)
       })
     };
-    this.lastPlayTimestamps = {};
-    this.debounceInterval = 300; // ms
   }
   play(key) {
     if (window.soundMuted) return;
-    const now = Date.now();
-    if (!this.lastPlayTimestamps[key]) this.lastPlayTimestamps[key] = 0;
-    if (now - this.lastPlayTimestamps[key] < this.debounceInterval) {
-      // Debounced: too soon to play this sound again
-      return;
-    }
-    this.lastPlayTimestamps[key] = now;
     const s = this.sounds[key];
     if (!s) {
       console.error('[SoundManager] Sound not found:', key);

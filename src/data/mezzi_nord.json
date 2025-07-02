@@ -111,7 +111,7 @@
         "Nome Postazione": "POSTAZIONE Castrovillari",
         "Coordinate Postazione": "39.8173547,16.2110575",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Castrovillari",
+        "Nome radio": "AM Castrovillari",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -129,7 +129,7 @@
         "Nome Postazione": "POSTAZIONE Cetraro",
         "Coordinate Postazione": "39.5311076,15.9180343",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Cetraro",
+        "Nome radio": "AM Cetraro",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -201,7 +201,7 @@
         "Nome Postazione": "POSTAZIONE Cosenza",
         "Coordinate Postazione": "39.3053853,16.2345845",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Cosenza",
+        "Nome radio": "AM Cosenza",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -237,7 +237,7 @@
         "Nome Postazione": "POSTAZIONE Crotone",
         "Coordinate Postazione": "39.0581765,17.1147874",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Crotone",
+        "Nome radio": "AM Crotone",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -408,7 +408,7 @@
         "Nome Postazione": "POSTAZIONE Rende",
         "Coordinate Postazione": "39.3640167,16.2260046",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Rende",
+        "Nome radio": "AM Rende",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -444,7 +444,7 @@
         "Nome Postazione": "POSTAZIONE Rossano",
         "Coordinate Postazione": "39.5967995,16.6370363",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Rossano",
+        "Nome radio": "AM Rossano",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -489,7 +489,7 @@
         "Nome Postazione": "POSTAZIONE San Marco Argentano",
         "Coordinate Postazione": "39.5561511,16.1228452",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA S. Marco",
+        "Nome radio": "AM S. Marco",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"
@@ -570,7 +570,7 @@
         "Nome Postazione": "POSTAZIONE Trebisacce",
         "Coordinate Postazione": "39.8734349,16.5359391",
         "Mezzo": "MSA2",
-        "Nome radio": "AUTOMEDICA Trebisacce",
+        "Nome radio": "AM Trebisacce",
         "Convenzione": "H24",
         "Orario di lavoro": "00:00-00:00",
         "Giorni": "LUN-DOM"

@@ -100,9 +100,8 @@ class GameUI {
         // Estrai via e comune senza CAP
         let indirizzo = call.indirizzo || call.location || 'Indirizzo sconosciuto';
         let via = '', comune = '';
-        // Regex per via: prende tutto fino alla prima cifra o virgola
-        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada)[^,\d]*)/i);
-        if(viaMatch) via = viaMatch[1].trim();
+        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada) [^,]+)/i);
+        if(viaMatch) via = viaMatch[1];
         // Regex: cerca la parte dopo la virgola, elimina CAP e prende solo il nome del comune
         // Esempio: "Via Decò e Canetta, 24068 Seriate BG" => comune = "Seriate"
         const comuneMatch = indirizzo.match(/,\s*(?:\d{5}\s*)?([\w' ]+?)\s+[A-Z]{2}/);
@@ -121,10 +120,9 @@ class GameUI {
             const tailComma = partsComma[partsComma.length-1].trim();
             if(tailComma) comune = tailComma;
         }
-        // Componi indirizzo sintetico come richiesto: via e comune
         let indirizzoSintetico = via;
-        if (comune) indirizzoSintetico += ' ' + comune;
-        indirizzoSintetico = indirizzoSintetico.trim();
+        if(comune) indirizzoSintetico += ' - ' + comune;
+        indirizzoSintetico = indirizzoSintetico.trim() || indirizzo;
         
         // Imposta lo stile base in base alla presenza o meno di mezzi
         let missioneStyle = '';
@@ -275,9 +273,8 @@ class GameUI {
         // Estrai via e comune senza CAP
         let indirizzo = call.indirizzo || call.location || 'Indirizzo sconosciuto';
         let via = '', comune = '';
-        // Regex per via: prende tutto fino alla prima cifra o virgola
-        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada)[^,\d]*)/i);
-        if(viaMatch) via = viaMatch[1].trim();
+        const viaMatch = indirizzo.match(/((Via|Viale|Piazza|Corso|Largo|Vicolo|Contrada|Borgo|Strada) [^,]+)/i);
+        if(viaMatch) via = viaMatch[1];
         // Regex: cerca la parte dopo la virgola, elimina CAP e prende solo il nome del comune
         // Esempio: "Via Decò e Canetta, 24068 Seriate BG" => comune = "Seriate"
         const comuneMatch = indirizzo.match(/,\s*(?:\d{5}\s*)?([\w' ]+?)\s+[A-Z]{2}/);
@@ -296,10 +293,9 @@ class GameUI {
             const tailComma = partsComma[partsComma.length-1].trim();
             if(tailComma) comune = tailComma;
         }
-        // Componi indirizzo sintetico come richiesto: via e comune
         let indirizzoSintetico = via;
-        if (comune) indirizzoSintetico += ' ' + comune;
-        indirizzoSintetico = indirizzoSintetico.trim();
+        if(comune) indirizzoSintetico += ' - ' + comune;
+        indirizzoSintetico = indirizzoSintetico.trim() || indirizzo;
         
         // Imposta lo stile in base alla presenza o meno di mezzi
         let missioneStyle = '';
@@ -778,10 +774,11 @@ class GameUI {
 
         // Create left panel for mezzi and right panel for ospedali
         container.insertAdjacentHTML('beforeend', `
-            <div id="stateMezziList" style="flex:2;display:flex;flex-direction:column;overflow-y:auto;height:100%;">
-            </div>
-            <div id="hospitalList" style="flex:1;display:flex;flex-direction:column;overflow-y:auto;border-left:1px solid #005baa;padding:4px;">
-                <div style="font-weight:bold;margin-bottom:6px;">Elenco Ospedali</div>
+            <div id="stateMezziList" style="flex:2;display:flex;flex-direction:column;overflow-y:auto;height:100%;"></div>
+            <div id="hospitalList" style="flex:1;display:flex;flex-direction:column;overflow-y:auto;border-left:1px solid #005baa;padding:0;">
+                <div class="mezzo-row ospedali-sticky-header" style="display:flex;align-items:center;font-weight:bold;background:#e3e3e3;border-bottom:1px solid #bbb;padding:4px 0 4px 0;position:sticky;top:0;z-index:2;">
+                    <div style="flex:1;overflow:hidden;text-overflow:ellipsis;">Elenco Ospedali</div>
+                </div>
             </div>
         `);
         const stateDiv = container.querySelector('#stateMezziList');
@@ -797,24 +794,43 @@ class GameUI {
             </div>
         `);
 
-        // Funzione robusta per etichetta stato
-        function getStatoLabel(stato) {
-             if (window.game && window.game.statiMezzi && window.game.statiMezzi[stato] && window.game.statiMezzi[stato].Descrizione) {
-                 return window.game.statiMezzi[stato].Descrizione;
-             }
-             return '';
+        // Funzione robusta per etichetta stato con logica speciale per stato 7
+        function getStatoLabel(stato, mezzo) {
+            if (stato === 7 && mezzo && mezzo.statoPrecedente) {
+                // Special handling for state 7 based on previous state
+                if (mezzo.statoPrecedente === 2) {
+                    return 'Missione interrotta';
+                } else if (mezzo.statoPrecedente === 6 || mezzo.statoPrecedente === 3) {
+                    return 'Diretto in sede';
+                }
+            }
+            
+            if (window.game && window.game.statiMezzi && window.game.statiMezzi[stato] && window.game.statiMezzi[stato].Descrizione) {
+                return window.game.statiMezzi[stato].Descrizione;
+            }
+            return '';
         }
 
-        // Filter vehicles: always include Creli (no m.central) and those of selected central; others only if state !=1 and !=8
+        // Filter vehicles according to new logic:
+        // 1. Always show vehicles from current central
+        // 2. Always show HEMS vehicles (no m.central)
+        // 3. Show vehicles from other central only if status != 1 (available) and != 8 (out of service)
         const allMezzi = window.game.mezzi || [];
-        const currentCentral = (window.selectedCentral || '').trim().toUpperCase();
+        const currentCentral = (window.selectedCentral || '').trim().toLowerCase();
         const mezzi = allMezzi.filter(m => {
-            // Creli vehicles have no m.central
+            // HEMS vehicles have no m.central - always show
             if (!m.central) return true;
-            // Vehicles of selected central
-            if (m.central === currentCentral) return true;
-            // Other central vehicles only if not available (state !=1) and not unknown(8)
-            return m.stato !== 1 && m.stato !== 8;
+            
+            const vehicleCentral = (m.central || '').trim().toLowerCase();
+            
+            // Show vehicles from current central
+            if (vehicleCentral === currentCentral) return true;
+            
+            // Show vehicles from other central only if status is not 1 (available) and not 8 (out of service)
+            if (vehicleCentral !== currentCentral && m.stato !== 1 && m.stato !== 8) return true;
+            
+            // Don't show other vehicles
+            return false;
         });
         const mezziStato8 = mezzi.filter(m => m.stato === 8);
         let altriMezzi = mezzi.filter(m => m.stato !== 8);
@@ -840,7 +856,7 @@ class GameUI {
                 // Calcola missioneId se presente
                 const call = Array.from(window.game.calls.values()).find(c => (c.mezziAssegnati||[]).includes(m.nome_radio));
                 const missioneId = call ? call.missioneId : '';
-                const statoLabel = getStatoLabel(m.stato) || m.stato;
+                const statoLabel = getStatoLabel(m.stato, m) || m.stato;
                 const comunicazione = Array.isArray(m.comunicazioni) && m.comunicazioni.length
                     ? m.comunicazioni[m.comunicazioni.length - 1]
                     : '';
@@ -852,11 +868,12 @@ class GameUI {
                 let displayName = m.nome_radio;
                 let extraStyle = '';
                 // Prefix other central vehicles and apply white background
-                const vehicleCentral = (m.central || '').trim().toUpperCase();
+                const vehicleCentral = (m.central || '').trim().toLowerCase();
                 const sel = currentCentral;
-                const prefixMap = { SRA: ['SRL','SRM','SRP'], SRL: ['SRA','SRM','SRP'], SRM: ['SRA','SRL','SRP'], SRP: ['SRA','SRL','SRM'] };
-                if (vehicleCentral && vehicleCentral !== sel && prefixMap[sel]?.includes(vehicleCentral)) {
-                    displayName = `(${vehicleCentral}) ${m.nome_radio}`;
+                // Simple check: if vehicle is from different central, add prefix
+                if (vehicleCentral && vehicleCentral !== sel) {
+                    const centralMap = { nord: 'Nord', sud: 'Sud' };
+                    displayName = `(${centralMap[vehicleCentral] || vehicleCentral}) ${m.nome_radio}`;
                     extraStyle = 'background-color:white;';
                 }
                 const rowStyle = `display:flex;align-items:center;border-bottom:1px solid #ddd;padding:4px 0;${hasUnreadReport ? 'animation: blink-report 1s infinite;' : ''}${extraStyle}`;
@@ -887,14 +904,12 @@ class GameUI {
         
         // Populate hospital list
         // Dynamic grouping per centrale operativa
-        const center = window.selectedCentral || 'SRA';
+        const center = window.selectedCentral || 'nord';
         const orderMap = {
-            SRA: [null,'(SRL)','(SRM)','(SRP)'],
-            SRL: [null,'(SRA)','(SRM)','(SRP)'],
-            SRM: [null,'(SRL)','(SRP)','(SRA)'],
-            SRP: [null,'(SRL)','(SRM)','(SRA)']
+            nord: [null, '(Sud)'],
+            sud: [null, '(Nord)']
         };
-        const order = orderMap[center] || orderMap['SRA'];
+        const order = orderMap[center] || orderMap['nord'];
         
         // Calcola la percentuale di occupazione per ogni ospedale prima dell'ordinamento
         const ospedaliConOccupazione = window.game.hospitals.map(h => {
